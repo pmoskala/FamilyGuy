@@ -2,10 +2,6 @@
 {
     public class BaseUrl
     {
-        public static string Current
-        {
-            get;
-            set;
-        }
+        public static string Current { get; set; }
     }
 }
