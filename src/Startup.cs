@@ -28,13 +28,29 @@ namespace FamilyGuy
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddControllersAsServices();
 
+            ConfigureApiVersioningFramework(services);
+
+            IContainer container = ConfigureAutofacDiContainer(services);
+            return new AutofacServiceProvider(container);
+        }
+
+        private static IContainer ConfigureAutofacDiContainer(IServiceCollection services)
+        {
             ContainerBuilder builder = new ContainerBuilder();
             RegisterExternalTypes(builder);
-
             builder.Populate(services);
             IContainer container = builder.Build();
+            return container;
+        }
 
-            return new AutofacServiceProvider(container);
+        private static void ConfigureApiVersioningFramework(IServiceCollection services)
+        {
+            services.AddApiVersioning(o =>
+            {
+                o.AssumeDefaultVersionWhenUnspecified = true;
+                o.ReportApiVersions = true;
+                o.DefaultApiVersion = new ApiVersion(1, 0);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
