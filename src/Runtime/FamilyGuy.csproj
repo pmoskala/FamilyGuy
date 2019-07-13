@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FamilyGuy.Infrastructure\FamilyGuy.Infrastructure.csproj" />
+    <ProjectReference Include="..\Infrastructure\FamilyGuy.Infrastructure\FamilyGuy.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
