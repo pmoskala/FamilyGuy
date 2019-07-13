@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\API\FamilyGuy.UserApi\FamilyGuy.UserApi.csproj" />
     <ProjectReference Include="..\Infrastructure\FamilyGuy.Infrastructure\FamilyGuy.Infrastructure.csproj" />
   </ItemGroup>
 
