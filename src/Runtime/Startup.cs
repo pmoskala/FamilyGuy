@@ -46,7 +46,7 @@ namespace FamilyGuy
         private static IContainer ConfigureAutofacDiContainer(IServiceCollection services)
         {
             ContainerBuilder builder = new ContainerBuilder();
-            builder.RegisterModule(new MainModule());
+            builder.RegisterModule<MainModule>();
             RegisterExternalTypes(builder);
             builder.Populate(services);
             IContainer container = builder.Build();

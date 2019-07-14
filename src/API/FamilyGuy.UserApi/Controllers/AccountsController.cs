@@ -9,7 +9,6 @@ namespace FamilyGuy.UserApi.Controllers
     {
         public AccountsController()
         {
-
         }
 
         [HttpGet]
