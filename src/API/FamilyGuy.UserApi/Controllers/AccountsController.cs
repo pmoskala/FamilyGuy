@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FamilyGuy.Accounts;
+using FamilyGuy.Accounts.Domain;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace FamilyGuy.UserApi.Controllers
 {
@@ -7,14 +11,20 @@ namespace FamilyGuy.UserApi.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class AccountsController : Controller
     {
-        public AccountsController()
+        private readonly IUserRepository _userRepository;
+
+        public AccountsController(IUserRepository userRepository)
         {
+            _userRepository = userRepository;
         }
 
         [HttpGet]
-        public IActionResult GetAccount()
+        public async Task<IActionResult> GetAccount()
         {
-            return Ok();
+            Guid newGuid = Guid.NewGuid();
+            await _userRepository.Add(new User(newGuid, "ala", "kotowska", "alko", "a@a.pl", "passw0rd"));
+            User user = await _userRepository.Get(newGuid);
+            return Json(user);
         }
     }
 }

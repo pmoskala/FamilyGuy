@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using FamilyGuy.Persistence.Configuration;
 using FamilyGuy.UserApi.DI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,23 +14,28 @@ namespace FamilyGuy
 {
     public class Startup
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public IConfiguration Configuration { get; }
         public static Action<ContainerBuilder> RegisterExternalTypes { get; set; } = builder => { };
 
-        public Startup(IConfiguration configuration)
+
+        public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
+            _hostingEnvironment = hostingEnvironment;
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddMvc()
-                .AddApplicationPart(typeof(AutofacUserApiModule).Assembly)
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddControllersAsServices();
+            services.AddMvc()
+                    .AddApplicationPart(typeof(AutofacUserApiModule).Assembly)
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                    .AddControllersAsServices();
+
+            services.AddEntityFrameworkSqlServer()
+                    .AddEntityFrameworkInMemoryDatabase()
+                    .AddDbContext<FamilyGuyDbContext>();
 
             AddSwaggerApiDocumentationFramework(services);
             ConfigureApiVersioningFramework(services);
@@ -43,10 +49,10 @@ namespace FamilyGuy
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "FamilyGuy API", Version = "v1" }); });
         }
 
-        private static IContainer ConfigureAutofacDiContainer(IServiceCollection services)
+        private IContainer ConfigureAutofacDiContainer(IServiceCollection services)
         {
             ContainerBuilder builder = new ContainerBuilder();
-            builder.RegisterModule<MainModule>();
+            builder.RegisterModule(new MainModule(Configuration, _hostingEnvironment.EnvironmentName));
             RegisterExternalTypes(builder);
             builder.Populate(services);
             IContainer container = builder.Build();

@@ -6,12 +6,17 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.9.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.8.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DI\" />
-    <Folder Include="Infrastructure\" />
+    <ProjectReference Include="..\..\Application\FamilyGuy.Accounts\FamilyGuy.Accounts.csproj" />
+    <ProjectReference Include="..\FamilyGuy.Persistence\FamilyGuy.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.EntityFrameworkCore">
+      <HintPath>..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.entityframeworkcore\2.2.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

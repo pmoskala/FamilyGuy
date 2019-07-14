@@ -9,7 +9,7 @@ namespace FamilyGuy
 {
     public class Bootstrap
     {
-        public static void Run(string[] args, Action<ContainerBuilder> overrideDependencies = null)
+        public static void Run(string[] args, Action<ContainerBuilder> overrideDependencies = null, string environmentName = null)
         {
             if (overrideDependencies != null)
             {
@@ -18,8 +18,12 @@ namespace FamilyGuy
 
             BaseUrl.Current = "http://localhost:5000";
             IWebHostBuilder whb = WebHost.CreateDefaultBuilder(args)
-                .UseKestrel()
-                .UseStartup<Startup>();
+                .UseKestrel();
+
+            if (environmentName != null)
+                whb.UseEnvironment(environmentName);
+
+            whb.UseStartup<Startup>();
 
             ThreadPool.QueueUserWorkItem(state => { whb.Build().Run(); });
         }

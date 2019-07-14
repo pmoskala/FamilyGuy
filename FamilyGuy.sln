@@ -17,6 +17,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyGuy.Accounts", "src\Application\FamilyGuy.Accounts\FamilyGuy.Accounts.csproj", "{6FA59F36-667E-428B-9273-D2AA47752C05}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyGuy.Contracts", "src\Contracts\FamilyGuy.Contracts\FamilyGuy.Contracts.csproj", "{A97128C8-CB9B-4A80-9377-4F584F51CE9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyGuy.Persistence", "src\Infrastructure\FamilyGuy.Persistence\FamilyGuy.Persistence.csproj", "{E55003A0-862D-40DD-91E4-1DDBA30279EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +47,14 @@ Global
 		{6FA59F36-667E-428B-9273-D2AA47752C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FA59F36-667E-428B-9273-D2AA47752C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FA59F36-667E-428B-9273-D2AA47752C05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A97128C8-CB9B-4A80-9377-4F584F51CE9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A97128C8-CB9B-4A80-9377-4F584F51CE9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A97128C8-CB9B-4A80-9377-4F584F51CE9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A97128C8-CB9B-4A80-9377-4F584F51CE9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E55003A0-862D-40DD-91E4-1DDBA30279EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E55003A0-862D-40DD-91E4-1DDBA30279EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E55003A0-862D-40DD-91E4-1DDBA30279EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E55003A0-862D-40DD-91E4-1DDBA30279EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
