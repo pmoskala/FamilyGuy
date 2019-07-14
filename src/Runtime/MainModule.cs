@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using FamilyGuy.Infrastructure.DI;
 using FamilyGuy.UserApi.DI;
 
 namespace FamilyGuy
@@ -7,7 +8,8 @@ namespace FamilyGuy
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new AutofacUserApiModule());
+            builder.RegisterModule<AutofacUserApiModule>();
+            builder.RegisterModule<MongoModule>();
         }
     }
 }
