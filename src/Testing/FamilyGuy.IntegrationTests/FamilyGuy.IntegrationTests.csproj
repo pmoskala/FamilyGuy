@@ -34,4 +34,8 @@
     <ProjectReference Include="..\..\Runtime\FamilyGuy.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="IntegrationTests\Mocks\" />
+  </ItemGroup>
+
 </Project>

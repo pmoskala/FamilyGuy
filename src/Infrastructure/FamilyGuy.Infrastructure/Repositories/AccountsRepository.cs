@@ -1,4 +1,6 @@
 ﻿using FamilyGuy.Accounts;
+using FamilyGuy.Accounts.AccountQuery;
+using FamilyGuy.Accounts.AccountQuery.Model;
 using FamilyGuy.Accounts.Domain;
 using FamilyGuy.Contracts;
 using FamilyGuy.Persistence.Configuration;
@@ -8,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace FamilyGuy.Infrastructure.Repositories
 {
-    public class UserRepository : IUserRepository, ISqlRepository
+    public class AccountsRepository : IAccountsPerspective, IAccountsRepository, ISqlRepository
     {
         private readonly FamilyGuyDbContext _dbContext;
         private readonly DbSet<User> _users;
 
-        public UserRepository(FamilyGuyDbContext dbContext)
+        public AccountsRepository(FamilyGuyDbContext dbContext)
         {
             _dbContext = dbContext;
             _users = dbContext.Users;
@@ -25,9 +27,16 @@ namespace FamilyGuy.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<User> Get(Guid id)
+        public async Task<AccountReadModel> Get(Guid userId)
         {
-            return await _users.FindAsync(id);
+            User user = await _users.FindAsync(userId);
+            return new AccountReadModel
+            {
+                Id = user.Id,
+                LoginName = user.UserName,
+                Name = user.Name,
+                Surname = user.Surname
+            };
         }
     }
 }

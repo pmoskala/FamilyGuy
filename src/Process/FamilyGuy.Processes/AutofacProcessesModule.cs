@@ -1,12 +1,17 @@
 ﻿using Autofac;
 using FamilyGuy.Contracts.Communication.Interfaces;
+using FamilyGuy.Processes.UserRegistration;
 
-namespace FamilyGuy.UserApi.DI
+namespace FamilyGuy.Processes
 {
-    public class AutofacUserApiModule : Module
+    public class AutofacProcessesModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<PasswordHasher>().AsImplementedInterfaces();
+
+            builder.RegisterType<SagaRepository>().AsImplementedInterfaces();
+
             builder.RegisterAssemblyTypes(GetType().Assembly)
                 .AsClosedTypesOf(typeof(ICommandHandler<>)).AsImplementedInterfaces()
                 .InstancePerLifetimeScope();

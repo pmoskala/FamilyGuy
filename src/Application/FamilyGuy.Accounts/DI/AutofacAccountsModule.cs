@@ -1,9 +1,9 @@
 ﻿using Autofac;
 using FamilyGuy.Contracts.Communication.Interfaces;
 
-namespace FamilyGuy.UserApi.DI
+namespace FamilyGuy.Accounts
 {
-    public class AutofacUserApiModule : Module
+    public class AutofacAccountsModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {

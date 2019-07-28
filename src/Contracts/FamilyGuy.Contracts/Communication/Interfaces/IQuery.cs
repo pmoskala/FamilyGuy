@@ -1,4 +1,4 @@
-﻿namespace FamilyGuy.Infrastructure.Communication.Interfaces
+﻿namespace FamilyGuy.Contracts.Communication.Interfaces
 {
     public interface IQuery
     {
