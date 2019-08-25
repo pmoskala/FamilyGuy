@@ -71,7 +71,7 @@ namespace FamilyGuy.Processes.UserRegistration
                 Email = context.Instance.Email,
                 PasswordHash = context.Instance.PasswordHash,
                 TelephoneNumber = context.Instance.TelephoneNumber
-            });
+            }).GetAwaiter().GetResult();
         }
     }
 }

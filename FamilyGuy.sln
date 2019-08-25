@@ -21,7 +21,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyGuy.Contracts", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyGuy.Persistence", "src\Infrastructure\FamilyGuy.Persistence\FamilyGuy.Persistence.csproj", "{E55003A0-862D-40DD-91E4-1DDBA30279EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyGuy.Processes", "src\Process\FamilyGuy.Processes\FamilyGuy.Processes.csproj", "{711238E4-6EEF-4ABE-B085-0677FBE9F5C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyGuy.Processes", "src\Process\FamilyGuy.Processes\FamilyGuy.Processes.csproj", "{711238E4-6EEF-4ABE-B085-0677FBE9F5C8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docu", "Docu", "{4336A6D3-8F62-4946-8B6F-285F96169067}"
+	ProjectSection(SolutionItems) = preProject
+		Instrictions.txt = Instrictions.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

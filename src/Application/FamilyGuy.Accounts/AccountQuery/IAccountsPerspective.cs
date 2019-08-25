@@ -7,5 +7,6 @@ namespace FamilyGuy.Accounts.AccountQuery
     public interface IAccountsPerspective
     {
         Task<AccountReadModel> Get(Guid userId);
+        Task<AccountReadModel> Get(string userName, string passwordHash);
     }
 }

@@ -17,7 +17,7 @@ namespace FamilyGuy.Accounts.CreateAccount
         public async Task Handle(CreateAccountCommand command)
         {
             User user = new User(command.Id, command.LoginName, command.Name, command.Surname, command.Email, command.PasswordHash, command.TelephoneNumber);
-            await Task.Run(() => _accountRepository.Add(user));
+            await _accountRepository.Add(user);
         }
     }
 }

@@ -21,6 +21,17 @@ namespace FamilyGuy.Infrastructure.InMemoryRepositories
         public async Task<AccountReadModel> Get(Guid userId)
         {
             User user = await Task.FromResult(Users.FirstOrDefault(x => x.Id == userId));
+            return user == null ? null : AccountReadModel(user);
+        }
+
+        public async Task<AccountReadModel> Get(string userName, string passwordHash)
+        {
+            User user = await Task.FromResult(Users.FirstOrDefault(x => x.UserName == userName && x.PasswordHash == passwordHash));
+            return user == null ? null : AccountReadModel(user);
+        }
+
+        private static AccountReadModel AccountReadModel(User user)
+        {
             return new AccountReadModel
             {
                 Id = user.Id,

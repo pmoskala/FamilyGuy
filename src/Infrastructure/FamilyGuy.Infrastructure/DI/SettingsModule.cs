@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using FamilyGuy.Infrastructure.Extensions;
 using FamilyGuy.Persistence.Configuration;
+using FamilyGuy.Settings;
 using Microsoft.Extensions.Configuration;
 
 namespace FamilyGuy.Infrastructure.DI
@@ -17,6 +18,8 @@ namespace FamilyGuy.Infrastructure.DI
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterInstance(_configuration.GetSettings<SqlSettings>())
+                .SingleInstance();
+            builder.RegisterInstance(_configuration.GetSettings<JwtSettings>())
                 .SingleInstance();
         }
     }

@@ -21,7 +21,7 @@ namespace FamilyGuy.Persistence.Configuration
                 .Bind(sqlSettings);
 
             optionsBuilder.UseSqlServer(sqlSettings.ConnectionString);
-            return new FamilyGuyDbContext(optionsBuilder.Options);
+            return new FamilyGuyDbContext(optionsBuilder.Options, sqlSettings);
         }
 
         private string GetAppSettingsFileName()

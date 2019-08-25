@@ -3,11 +3,6 @@ using System.Text;
 
 namespace FamilyGuy.Processes.UserRegistration
 {
-    public interface IPasswordHasher
-    {
-        string Hash(string password);
-    }
-
     internal class PasswordHasher : IPasswordHasher
     {
         public string Hash(string password)

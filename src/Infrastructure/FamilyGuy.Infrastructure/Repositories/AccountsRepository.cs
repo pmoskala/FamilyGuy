@@ -24,12 +24,24 @@ namespace FamilyGuy.Infrastructure.Repositories
         public async Task Add(User user)
         {
             _users.Add(user);
+            //_users.Add(user);
             await _dbContext.SaveChangesAsync();
         }
 
         public async Task<AccountReadModel> Get(Guid userId)
         {
             User user = await _users.FindAsync(userId);
+            return AccountReadModel(user);
+        }
+
+        public async Task<AccountReadModel> Get(string userName, string passwordHash)
+        {
+            User user = await _users.FirstOrDefaultAsync(x => x.UserName == userName && x.PasswordHash == passwordHash);
+            return user == null ? null : AccountReadModel(user);
+        }
+
+        private static AccountReadModel AccountReadModel(User user)
+        {
             return new AccountReadModel
             {
                 Id = user.Id,

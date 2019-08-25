@@ -8,7 +8,6 @@ namespace FamilyGuy.Processes
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<PasswordHasher>().AsImplementedInterfaces();
 
             builder.RegisterType<SagaRepository>().AsImplementedInterfaces();
 
