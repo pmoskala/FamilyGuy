@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FamilyGuy.Infrastructure.Extensions;
+using FamilyGuy.Middleware;
 using FamilyGuy.Persistence.Configuration;
 using FamilyGuy.Settings;
 using FamilyGuy.TestingAuth;
@@ -134,8 +135,8 @@ namespace FamilyGuy
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "NicePress Api v1");
             });
 
+            app.UseResponseTimeMeasurementMiddleware();
             app.UseAuthentication();
-
             app.UseMvc();
         }
     }
