@@ -15,7 +15,7 @@ namespace FamilyGuy.Middleware
         public ResponseTimeMeasurementMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
         {
             _next = next;
-            _logger = loggerFactory.CreateLogger("Response Time Logger");
+            _logger = loggerFactory.CreateLogger("Performance measurement");
         }
 
         public async Task Invoke(HttpContext httpContext)

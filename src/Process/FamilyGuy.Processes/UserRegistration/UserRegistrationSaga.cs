@@ -3,6 +3,7 @@ using FamilyGuy.Accounts.CreateAccount.Contract;
 using FamilyGuy.Contracts.Communication.Interfaces;
 using FamilyGuy.Processes.UserRegistration.Contract;
 using System.Linq;
+using System.Threading.Tasks;
 
 
 namespace FamilyGuy.Processes.UserRegistration
@@ -31,7 +32,7 @@ namespace FamilyGuy.Processes.UserRegistration
 
             During(WaitingForConfirmation,
                 When(ConfirmUserCommand)
-                    .Then(CreateUserAccount)
+                    .ThenAsync(CreateUserAccount)
                     .TransitionTo(Final));
         }
 
@@ -59,9 +60,9 @@ namespace FamilyGuy.Processes.UserRegistration
             //});
         }
 
-        private void CreateUserAccount(BehaviorContext<UserRegistrationSagaData> context)
+        private async Task CreateUserAccount(BehaviorContext<UserRegistrationSagaData> context)
         {
-            _commandBus.Send(new CreateAccountCommand()
+            await _commandBus.Send(new CreateAccountCommand()
             {
                 Id = context.Instance.Id,
                 LoginName = context.Instance.LoginName,
@@ -71,7 +72,7 @@ namespace FamilyGuy.Processes.UserRegistration
                 Email = context.Instance.Email,
                 PasswordHash = context.Instance.PasswordHash,
                 TelephoneNumber = context.Instance.TelephoneNumber
-            }).GetAwaiter().GetResult();
+            });
         }
     }
 }

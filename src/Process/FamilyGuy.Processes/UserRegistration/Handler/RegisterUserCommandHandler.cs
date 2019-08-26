@@ -1,4 +1,5 @@
 ﻿using Automatonymous;
+using FamilyGuy.Accounts.AccountQuery.Model;
 using FamilyGuy.Contracts.Communication.Interfaces;
 using FamilyGuy.Processes.UserRegistration.Contract;
 using System.Threading.Tasks;
@@ -24,10 +25,12 @@ namespace FamilyGuy.Processes.UserRegistration.Handler
         }
         public async Task Handle(RegisterUserCommand command)
         {
-            if (await _sagaRepository.Get<UserRegistrationSagaData>(x => x.LoginName == command.LoginName) != null)
-            {
+            AccountReadModel accountReadModel = await _query.Query<Task<AccountReadModel>, string>(command.LoginName);
+            if (accountReadModel != null)
                 throw new LoginNameAlreadyUsedException(command.LoginName);
-            }
+
+            if (await _sagaRepository.Get<UserRegistrationSagaData>(x => x.LoginName == command.LoginName) != null)
+                throw new LoginNameAlreadyUsedException(command.LoginName);
 
             UserRegistrationSaga saga = new UserRegistrationSaga(_commandBus, _passwordHasher);
             UserRegistrationSagaData data = new UserRegistrationSagaData { Id = command.Id };

@@ -118,11 +118,6 @@ namespace FamilyGuy
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             // todo limit this later, it's ok for the time being
             app.UseCors(x => x
                 .AllowAnyOrigin()

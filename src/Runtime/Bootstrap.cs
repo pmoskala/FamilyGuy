@@ -2,6 +2,7 @@
 using FamilyGuy.Infrastructure;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Serilog;
 using System;
 using System.Threading;
 
@@ -23,9 +24,14 @@ namespace FamilyGuy
             if (environmentName != null)
                 whb.UseEnvironment(environmentName);
 
+            whb.UseSerilog(ConfigureLogging);
             whb.UseStartup<Startup>();
-
             ThreadPool.QueueUserWorkItem(state => { whb.Build().Run(); });
+        }
+
+        private static void ConfigureLogging(WebHostBuilderContext webHostingContext, LoggerConfiguration loggerConfiguration)
+        {
+            loggerConfiguration.ReadFrom.Configuration(webHostingContext.Configuration);
         }
     }
 }

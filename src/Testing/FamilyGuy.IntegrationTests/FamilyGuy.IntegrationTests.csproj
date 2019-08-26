@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="IntegrationTests\Mocks\**" />
+    <EmbeddedResource Remove="IntegrationTests\Mocks\**" />
+    <None Remove="IntegrationTests\Mocks\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="appsettings.IntegrationTesting.json" />
   </ItemGroup>
 
@@ -22,7 +28,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="RestEase" Version="1.4.9" />
+    <PackageReference Include="RestEase" Version="1.4.10" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
@@ -34,10 +40,6 @@
     <ProjectReference Include="..\..\API\FamilyGuy.UserApi\FamilyGuy.UserApi.csproj" />
     <ProjectReference Include="..\..\Infrastructure\FamilyGuy.Infrastructure\FamilyGuy.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Runtime\FamilyGuy.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IntegrationTests\Mocks\" />
   </ItemGroup>
 
 </Project>
