@@ -1,4 +1,4 @@
-﻿namespace FamilyGuy.Settings
+﻿namespace FamilyGuy.Infrastructure.DI
 {
     public class JwtSettings
     {

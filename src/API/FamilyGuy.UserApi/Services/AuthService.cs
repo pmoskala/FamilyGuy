@@ -1,7 +1,7 @@
 ﻿using FamilyGuy.Accounts.AccountQuery.Model;
 using FamilyGuy.Contracts.Communication.Interfaces;
+using FamilyGuy.Infrastructure.DI;
 using FamilyGuy.Processes.UserRegistration;
-using FamilyGuy.Settings;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,14 +26,16 @@ namespace FamilyGuy.UserApi.Services
 
         public async Task<AuthenticatedUserReadModel> Authenticate(string userName, string password)
         {
-            UserAuthenticationModel userAuthenticationModel = new UserAuthenticationModel
+            AccountByUserNameQuery accountByUserNameQuery = new AccountByUserNameQuery
             {
                 UserName = userName,
-                PasswordHash = _passwordHasher.Hash(password)
             };
 
-            AccountReadModel account = await _query.Query<Task<AccountReadModel>, UserAuthenticationModel>(userAuthenticationModel);
+            AccountWithCredentialsModel account = await _query.Query<Task<AccountWithCredentialsModel>, AccountByUserNameQuery>(accountByUserNameQuery);
             if (account == null) return null;
+
+            if (!await _passwordHasher.CheckHash(password, account.PasswordHash, account.PasswordSalt))
+                return null; // todo throw exception
 
             byte[] key = Encoding.ASCII.GetBytes(_jwtSettings.Key);
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
@@ -42,7 +44,7 @@ namespace FamilyGuy.UserApi.Services
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, account.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

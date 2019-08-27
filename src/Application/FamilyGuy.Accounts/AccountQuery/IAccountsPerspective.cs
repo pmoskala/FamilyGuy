@@ -8,6 +8,6 @@ namespace FamilyGuy.Accounts.AccountQuery
     {
         Task<AccountReadModel> Get(Guid userId);
         Task<AccountReadModel> Get(string userName);
-        Task<AccountReadModel> Get(string userName, string passwordHash);
+        Task<AccountWithCredentialsModel> GetUserWithCredentials(string userName);
     }
 }

@@ -26,7 +26,7 @@ namespace FamilyGuy.Processes.UserRegistration
 
             Initially(
                 When(RegisterUserCommand)
-                    .Then(CopyDataToSaga)
+                    .ThenAsync(CopyDataToSaga)
                     .Then(SendRegistrationNotification)
                     .TransitionTo(WaitingForConfirmation));
 
@@ -36,14 +36,16 @@ namespace FamilyGuy.Processes.UserRegistration
                     .TransitionTo(Final));
         }
 
-        private void CopyDataToSaga(BehaviorContext<UserRegistrationSagaData, RegisterUserCommand> context)
+        private async Task CopyDataToSaga(BehaviorContext<UserRegistrationSagaData, RegisterUserCommand> context)
         {
+            string salt = await _passwordHasher.GetSalt();
             context.Instance.Id = context.Data.Id;
             context.Instance.BaseUrl = context.Data.BaseUrl;
             context.Instance.LoginName = context.Data.LoginName;
             context.Instance.Name = context.Data.Name;
             context.Instance.Surname = context.Data.Surname;
-            context.Instance.PasswordHash = _passwordHasher.Hash(context.Data.Password);
+            context.Instance.PasswordHash = await _passwordHasher.HashString(context.Data.Password, salt);
+            context.Instance.PasswordSalt = salt;
             context.Instance.Email = context.Data.Email;
             context.Instance.TelephoneNumber = context.Data.TelephoneNumber;
         }
@@ -71,6 +73,7 @@ namespace FamilyGuy.Processes.UserRegistration
                 BaseUrl = context.Instance.BaseUrl,
                 Email = context.Instance.Email,
                 PasswordHash = context.Instance.PasswordHash,
+                PasswordSalt = context.Instance.PasswordSalt,
                 TelephoneNumber = context.Instance.TelephoneNumber
             });
         }

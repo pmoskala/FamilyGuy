@@ -12,6 +12,7 @@ namespace FamilyGuy.Processes.UserRegistration
         public string Name { get; set; }
         public string Surname { get; set; }
         public string PasswordHash { get; set; }
+        public string PasswordSalt { get; set; }
         public string BaseUrl { get; set; }
         public string TelephoneNumber { get; set; }
         public State CurrentState { get; set; }
@@ -22,6 +23,4 @@ namespace FamilyGuy.Processes.UserRegistration
     public interface ISagaData
     {
     }
-
-
 }

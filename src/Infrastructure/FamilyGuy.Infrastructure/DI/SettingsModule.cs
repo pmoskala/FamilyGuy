@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using FamilyGuy.Infrastructure.Extensions;
 using FamilyGuy.Persistence.Configuration;
-using FamilyGuy.Settings;
 using Microsoft.Extensions.Configuration;
 
 namespace FamilyGuy.Infrastructure.DI

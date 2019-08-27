@@ -7,8 +7,8 @@ namespace FamilyGuy.Accounts.AccountQuery
 {
     public class GetAccountHandler :
         IQueryHandler<Task<AccountReadModel>, Guid>,
-        IQueryHandler<Task<AccountReadModel>, string>,
-        IQueryHandler<Task<AccountReadModel>, UserAuthenticationModel>
+        IQueryHandler<Task<AccountReadModel>, string>, // todo this is bad, use custom class not string
+        IQueryHandler<Task<AccountWithCredentialsModel>, AccountByUserNameQuery>
     {
         private readonly IAccountsPerspective _perspective;
 
@@ -22,14 +22,15 @@ namespace FamilyGuy.Accounts.AccountQuery
             return await _perspective.Get(userId);
         }
 
-        public async Task<AccountReadModel> Handle(UserAuthenticationModel request)
-        {
-            return await _perspective.Get(request.UserName, request.PasswordHash);
-        }
-
         public async Task<AccountReadModel> Handle(string request)
         {
             return await _perspective.Get(request);
         }
+
+        public async Task<AccountWithCredentialsModel> Handle(AccountByUserNameQuery query)
+        {
+            return await _perspective.GetUserWithCredentials(query.UserName);
+        }
+
     }
 }

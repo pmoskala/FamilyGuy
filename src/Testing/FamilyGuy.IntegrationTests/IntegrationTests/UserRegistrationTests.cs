@@ -3,6 +3,7 @@ using FamilyGuy.Infrastructure.InMemoryRepositories;
 using FamilyGuy.IntegrationTests.IntegrationTests.UserApi;
 using FamilyGuy.UserApi.Controllers;
 using FamilyGuy.UserApi.Model;
+using FamilyGuy.UserApi.Services;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using RestEase;
@@ -26,16 +27,7 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests
             }, "IntegrationTesting");
 
             Guid userId = Guid.NewGuid();
-            PostAccountModel postAccountModel = new PostAccountModel()
-            {
-                Id = userId,
-                LoginName = Guid.NewGuid().ToString(),
-                Name = "Ala",
-                Surname = "Kociak",
-                Password = Guid.NewGuid().ToString(),
-                TelephoneNumber = "555-123-321",
-                Email = "ala.ma.kotowska@gmail.com"
-            };
+            PostAccountModel postAccountModel = CreatePostAccountModel(userId);
 
             // Act
             HttpResponseHeaders responseMessageHeaders;
@@ -63,6 +55,51 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests
         }
 
         [Fact]
+        public async void UserCreationWithAuthenticationProcessTests()
+        {
+            // Setup
+            Bootstrap.Run(new string[0], builder =>
+            {
+
+                //builder.RegisterType<TestSmtpClient>().AsImplementedInterfaces();
+            }, "IntegrationTesting");
+
+            Guid userId = Guid.NewGuid();
+            PostAccountModel postAccountModel = CreatePostAccountModel(userId);
+
+            // Act
+            HttpResponseHeaders responseMessageHeaders;
+            using (Response<string> response = await RestClient.For<IAccountsApi>(Url).PostAccount(postAccountModel))
+            {
+                Assert.True(response.ResponseMessage.IsSuccessStatusCode);
+                responseMessageHeaders = response.ResponseMessage.Headers;
+                Assert.True(responseMessageHeaders.Location.IsAbsoluteUri);
+            }
+
+            using (Response<string> response = await RestClient.For<IConfirmationApi>(responseMessageHeaders.Location)
+                .PutConfirmation(new ConfirmationModel { Confirmed = true }))
+            {
+                Assert.True(response.ResponseMessage.IsSuccessStatusCode);
+            }
+
+            PostUserAuthenticationModel postUserAuthenticationModel = new PostUserAuthenticationModel
+            {
+                UserName = postAccountModel.LoginName,
+                Password = postAccountModel.Password
+            };
+
+            using (Response<AuthenticatedUserReadModel> response = await RestClient.For<IAccountsApi>(Url).PostAuthenticate(postUserAuthenticationModel))
+            {
+                Assert.True(response.ResponseMessage.IsSuccessStatusCode);
+                AuthenticatedUserReadModel authUser = response.GetContent();
+                Assert.Equal(postAccountModel.Name, authUser.Name);
+                Assert.Equal(postAccountModel.Surname, authUser.Surname);
+                string[] tokenParts = authUser.Token.Split('.');
+                Assert.Equal(3, tokenParts.Length);
+            }
+        }
+
+        [Fact]
         public async void UserCreationProcessTests_ShouldFailWhenUserNameIsNotUniqueAndRegistrationProcessIsNotComplete()
         {
             // Setup
@@ -72,16 +109,7 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests
             }, "IntegrationTesting");
 
             Guid userId = Guid.NewGuid();
-            PostAccountModel postAccountModel = new PostAccountModel()
-            {
-                Id = userId,
-                LoginName = Guid.NewGuid().ToString(),
-                Name = "Ala",
-                Surname = "Kociak",
-                Password = Guid.NewGuid().ToString(),
-                TelephoneNumber = "555-123-321",
-                Email = "ala.ma.kotowska@gmail.com"
-            };
+            PostAccountModel postAccountModel = CreatePostAccountModel(userId);
 
             // Act
             using (Response<string> response = await RestClient.For<IAccountsApi>(Url).PostAccount(postAccountModel))
@@ -109,16 +137,7 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests
             }, "IntegrationTesting");
 
             Guid userId = Guid.NewGuid();
-            PostAccountModel postAccountModel = new PostAccountModel()
-            {
-                Id = userId,
-                LoginName = Guid.NewGuid().ToString(),
-                Name = "Ala",
-                Surname = "Kociak",
-                Password = Guid.NewGuid().ToString(),
-                TelephoneNumber = "555-123-321",
-                Email = "ala.ma.kotowska@gmail.com"
-            };
+            PostAccountModel postAccountModel = CreatePostAccountModel(userId);
 
             // Act
             HttpResponseHeaders responseMessageHeaders;
@@ -128,6 +147,7 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests
                 responseMessageHeaders = response.ResponseMessage.Headers;
                 Assert.True(responseMessageHeaders.Location.IsAbsoluteUri);
             }
+
             using (Response<string> response = await RestClient.For<IConfirmationApi>(responseMessageHeaders.Location)
                 .PutConfirmation(new ConfirmationModel { Confirmed = true }))
             {
@@ -140,6 +160,20 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests
                 Dictionary<string, string[]> deserializeObject = JsonConvert.DeserializeObject<Dictionary<string, string[]>>(response.StringContent);
                 Assert.Equal($"The provided username {postAccountModel.LoginName} already exists", deserializeObject["LoginName"][0]);
             }
+        }
+
+        private static PostAccountModel CreatePostAccountModel(Guid userId)
+        {
+            return new PostAccountModel()
+            {
+                Id = userId,
+                LoginName = Guid.NewGuid().ToString(),
+                Name = "Ala",
+                Surname = "Kociak",
+                Password = Guid.NewGuid().ToString(),
+                TelephoneNumber = "555-123-321",
+                Email = "ala.ma.kotowska@gmail.com"
+            };
         }
 
         public void Dispose()

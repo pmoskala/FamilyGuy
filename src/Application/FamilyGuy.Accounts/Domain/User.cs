@@ -10,6 +10,7 @@ namespace FamilyGuy.Accounts.Domain
         public string Surname { get; protected set; }
         public string Email { get; protected set; }
         public string PasswordHash { get; protected set; }
+        public string PasswordSalt { get; protected set; }
         public string TelephoneNumber { get; protected set; }
 
         public User()
@@ -17,7 +18,7 @@ namespace FamilyGuy.Accounts.Domain
 
         }
 
-        public User(Guid id, string userName, string name, string surname, string email, string password, string telephoneNumber)
+        public User(Guid id, string userName, string name, string surname, string email, string password, string passwordSalt, string telephoneNumber)
         {
             Id = id;
             UserName = userName;
@@ -25,6 +26,7 @@ namespace FamilyGuy.Accounts.Domain
             Surname = surname;
             Email = email;
             PasswordHash = password;
+            PasswordSalt = passwordSalt;
             TelephoneNumber = telephoneNumber;
         }
     }

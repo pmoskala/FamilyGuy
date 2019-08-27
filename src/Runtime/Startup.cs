@@ -1,9 +1,9 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using FamilyGuy.Infrastructure.DI;
 using FamilyGuy.Infrastructure.Extensions;
 using FamilyGuy.Middleware;
 using FamilyGuy.Persistence.Configuration;
-using FamilyGuy.Settings;
 using FamilyGuy.TestingAuth;
 using FamilyGuy.UserApi.DI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

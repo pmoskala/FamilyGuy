@@ -39,11 +39,24 @@ namespace FamilyGuy.Infrastructure.Repositories
             return user == null ? null : AccountReadModel(user);
         }
 
-        public async Task<AccountReadModel> Get(string userName, string passwordHash)
+        public async Task<AccountWithCredentialsModel> GetUserWithCredentials(string userName)
         {
-            User user = await _users.FirstOrDefaultAsync(x => x.UserName == userName && x.PasswordHash == passwordHash);
-            return user == null ? null : AccountReadModel(user);
+            User user = await _users.FirstOrDefaultAsync(x => x.UserName == userName);
+            return AccountWithCredentialsModel(user);
         }
+
+        private static AccountWithCredentialsModel AccountWithCredentialsModel(User user)
+        {
+            return new AccountWithCredentialsModel
+            {
+                Id = user.Id,
+                PasswordSalt = user.PasswordSalt,
+                Name = user.Name,
+                Surname = user.Surname,
+                PasswordHash = user.PasswordHash
+            };
+        }
+
 
         private static AccountReadModel AccountReadModel(User user)
         {
