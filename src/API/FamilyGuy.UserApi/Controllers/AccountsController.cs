@@ -47,11 +47,11 @@ namespace FamilyGuy.UserApi.Controllers
                     TelephoneNumber = model.TelephoneNumber
                 });
             }
-            catch (LoginNameAlreadyUsedException)
+            catch (LoginNameAlreadyUsedException ex)
             {
                 //ModelState.AddModelError(); // todo think about it 
                 ModelStateDictionary mds = new ModelStateDictionary();
-                mds.AddModelError("loginName", "Already exists");
+                mds.AddModelError(nameof(ex.LoginName), $"The provided username {ex.LoginName} already exists");
                 return Conflict(mds);
             }
 

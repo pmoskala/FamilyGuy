@@ -116,7 +116,7 @@ namespace FamilyGuy
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             // todo limit this later, it's ok for the time being
             app.UseCors(x => x
@@ -124,13 +124,14 @@ namespace FamilyGuy
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
+            app.UseResponseTimeMeasurementMiddleware();
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "FamilyGuy Api v1");
             });
 
-            app.UseResponseTimeMeasurementMiddleware();
             app.UseAuthentication();
             app.UseMvc();
         }
