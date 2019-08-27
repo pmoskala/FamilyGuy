@@ -127,7 +127,7 @@ namespace FamilyGuy
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "NicePress Api v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FamilyGuy Api v1");
             });
 
             app.UseResponseTimeMeasurementMiddleware();

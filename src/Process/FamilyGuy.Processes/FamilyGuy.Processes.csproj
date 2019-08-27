@@ -9,7 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Infrastructure\FamilyGuy.Infrastructure\FamilyGuy.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Application\FamilyGuy.Accounts\FamilyGuy.Accounts.csproj" />
+    <ProjectReference Include="..\..\Contracts\FamilyGuy.Contracts\FamilyGuy.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
