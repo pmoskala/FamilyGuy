@@ -27,6 +27,14 @@ namespace FamilyGuy.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task UpdatePassword(Guid userId, string passwordHash, string salt)
+        {
+            User user = await _users.FindAsync(userId);
+            user.SetPassword(passwordHash, salt);
+            _users.Update(user);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<AccountReadModel> Get(Guid userId)
         {
             User user = await _users.FindAsync(userId);
@@ -42,7 +50,7 @@ namespace FamilyGuy.Infrastructure.Repositories
         public async Task<AccountWithCredentialsModel> GetUserWithCredentials(string userName)
         {
             User user = await _users.FirstOrDefaultAsync(x => x.UserName == userName);
-            return AccountWithCredentialsModel(user);
+            return user != null ? AccountWithCredentialsModel(user) : null;
         }
 
         private static AccountWithCredentialsModel AccountWithCredentialsModel(User user)
@@ -56,7 +64,6 @@ namespace FamilyGuy.Infrastructure.Repositories
                 PasswordHash = user.PasswordHash
             };
         }
-
 
         private static AccountReadModel AccountReadModel(User user)
         {

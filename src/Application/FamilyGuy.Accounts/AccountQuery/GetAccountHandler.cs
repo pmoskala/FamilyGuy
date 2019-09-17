@@ -2,6 +2,7 @@
 using FamilyGuy.Contracts.Communication.Interfaces;
 using System;
 using System.Threading.Tasks;
+using FamilyGuy.Accounts.AccountExceptions;
 
 namespace FamilyGuy.Accounts.AccountQuery
 {
@@ -29,8 +30,10 @@ namespace FamilyGuy.Accounts.AccountQuery
 
         public async Task<AccountWithCredentialsModel> Handle(AccountByUserNameQuery query)
         {
-            return await _perspective.GetUserWithCredentials(query.UserName);
+            AccountWithCredentialsModel accountWithCredentialsModel = await _perspective.GetUserWithCredentials(query.UserName);
+            if (accountWithCredentialsModel != null)
+                return accountWithCredentialsModel;
+            throw new UserNotFoundFgException(query.UserName);
         }
-
     }
 }

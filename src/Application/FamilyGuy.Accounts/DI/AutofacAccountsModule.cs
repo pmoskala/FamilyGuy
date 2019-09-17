@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using FamilyGuy.Contracts.Communication.Interfaces;
 
-namespace FamilyGuy.Accounts
+namespace FamilyGuy.Accounts.DI
 {
     public class AutofacAccountsModule : Module
     {

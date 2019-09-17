@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using FamilyGuy.Accounts;
+using FamilyGuy.Accounts.DI;
 using FamilyGuy.Infrastructure.DI;
 using FamilyGuy.Infrastructure.InMemoryRepositories;
 using FamilyGuy.Processes;

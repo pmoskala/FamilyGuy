@@ -5,11 +5,13 @@ using FamilyGuy.Processes.UserRegistration.Contract;
 using FamilyGuy.UserApi.Model;
 using FamilyGuy.UserApi.Services;
 using System;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using FamilyGuy.Accounts.ChangePassword.Contract;
 
 namespace FamilyGuy.UserApi.Controllers
 {
@@ -69,10 +71,42 @@ namespace FamilyGuy.UserApi.Controllers
 
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<AccountReadModel>> GetAccount([FromRoute]Guid id)
+        public async Task<ActionResult<AccountReadModel>> GetAccount([FromRoute] Guid id)
         {
             AccountReadModel account = await _query.Query<Task<AccountReadModel>, Guid>(id);
             return Content(JsonSerializer.Serialize(account));
+        }
+
+        [Authorize]
+        [HttpPut("password")]
+        public async Task<IActionResult> ChangePassword([FromBody] PasswordChangePutModel passwordChangePutModel)
+        {
+            Guid userIdFromToken = GetUserIdFromToken();
+            if (userIdFromToken != passwordChangePutModel.UserId)
+            {
+                ModelStateDictionary mds = new ModelStateDictionary();
+                mds.AddModelError("Password", "Password cannot be changed for unauthorized user.");
+                return BadRequest(mds);
+            }
+
+            ChangeUserPasswordCommand changeUserPasswordCommand = new ChangeUserPasswordCommand
+            {
+                UserId = userIdFromToken,
+                Password = passwordChangePutModel.NewPassword
+            };
+
+            await _commandBus.Send(changeUserPasswordCommand);            
+            return Ok();
+        }
+
+        private Guid GetUserIdFromToken()
+        {
+            Claim nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier);
+            string tokenSubValue = nameIdentifier.Value;
+            if (!Guid.TryParse(tokenSubValue, out Guid userId))
+                throw new FormatException($"Provided string-guid value {tokenSubValue} is invalid");
+
+            return userId;
         }
     }
 }
