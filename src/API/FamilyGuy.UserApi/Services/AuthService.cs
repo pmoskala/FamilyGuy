@@ -2,12 +2,12 @@
 using FamilyGuy.Contracts.Communication.Interfaces;
 using FamilyGuy.Infrastructure.DI;
 using FamilyGuy.Processes.UserRegistration;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FamilyGuy.UserApi.Services
 {

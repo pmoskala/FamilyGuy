@@ -1,16 +1,16 @@
 ﻿using FamilyGuy.Contracts.Communication.Interfaces;
 using FamilyGuy.Processes.UserRegistration.Contract;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyGuy.UserApi.Controllers
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    public class ConfirmationsController : Controller
+    public class ConfirmationsController : ControllerBase
     {
         private readonly ICommandBus _commandBus;
 

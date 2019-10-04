@@ -27,8 +27,11 @@ namespace FamilyGuy.Middleware
                 watch.Stop();
                 long responseTimeForCompleteRequest = watch.ElapsedMilliseconds;
                 httpContext.Response.Headers[ResponseHeaderResponseTime] = responseTimeForCompleteRequest.ToString();
-                _logger.LogWarning($"Response completed in {responseTimeForCompleteRequest} ms.");
-
+                if (responseTimeForCompleteRequest > 500)
+                    _logger.LogWarning($"Response performance not sufficient. Completed in {responseTimeForCompleteRequest} ms.");
+                else 
+                    _logger.LogInformation($"Response completed in {responseTimeForCompleteRequest} ms.");
+                
                 return Task.CompletedTask;
             });
             await _next(httpContext);

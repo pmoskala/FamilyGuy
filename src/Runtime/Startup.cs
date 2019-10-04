@@ -6,27 +6,28 @@ using FamilyGuy.Middleware;
 using FamilyGuy.Persistence.Configuration;
 using FamilyGuy.TestingAuth;
 using FamilyGuy.UserApi.DI;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace FamilyGuy
 {
     public class Startup
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         public IConfiguration Configuration { get; }
         public static Action<ContainerBuilder> RegisterExternalTypes { get; set; } = builder => { };
 
 
-        public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        public Startup(IConfiguration configuration, IWebHostEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
             Configuration = configuration;
@@ -35,10 +36,11 @@ namespace FamilyGuy
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc()
-                    .AddApplicationPart(typeof(AutofacUserApiModule).Assembly)
-                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                    .AddControllersAsServices();
+
+            services.AddControllers()
+                .AddApplicationPart(typeof(AutofacUserApiModule).Assembly)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddControllersAsServices();
 
             services.AddEntityFrameworkSqlServer()
                     .AddEntityFrameworkInMemoryDatabase()
@@ -91,7 +93,7 @@ namespace FamilyGuy
 
         private static void AddSwaggerApiDocumentationFramework(IServiceCollection services)
         {
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "FamilyGuy API", Version = "v1" }); });
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "FamilyGuy API", Version = "v1" }); });
         }
 
         private IContainer ConfigureAutofacDiContainer(IServiceCollection services)
@@ -118,22 +120,29 @@ namespace FamilyGuy
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
+            app.UseResponseTimeMeasurementMiddleware();
+            
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FamilyGuy Api v1");
+            });
+            
+            app.UseAuthorization();
+            app.UseAuthentication();
+
+            app.UseRouting();
+
             // todo limit this later, it's ok for the time being
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
-            app.UseResponseTimeMeasurementMiddleware();
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            app.UseEndpoints(endpoints =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FamilyGuy Api v1");
+                endpoints.MapControllers();
             });
-
-            app.UseAuthentication();
-            app.UseMvc();
         }
     }
 }

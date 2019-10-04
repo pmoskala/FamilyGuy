@@ -4,18 +4,19 @@ using FamilyGuy.Infrastructure;
 using FamilyGuy.Processes.UserRegistration.Contract;
 using FamilyGuy.UserApi.Model;
 using FamilyGuy.UserApi.Services;
+using System;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-using System.Threading.Tasks;
 
 namespace FamilyGuy.UserApi.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class AccountsController : Controller
+    public class AccountsController : ControllerBase
     {
         private readonly ICommandBus _commandBus;
         private readonly IQuery _query;
@@ -63,7 +64,7 @@ namespace FamilyGuy.UserApi.Controllers
         public async Task<IActionResult> PostAuthenticate([FromBody] PostUserAuthenticationModel user)
         {
             AuthenticatedUserReadModel token = await _authenticationService.Authenticate(user.UserName, user.Password);
-            return Json(token);
+            return Content(JsonSerializer.Serialize(token));
         }
 
         [Authorize]
@@ -71,7 +72,7 @@ namespace FamilyGuy.UserApi.Controllers
         public async Task<ActionResult<AccountReadModel>> GetAccount([FromRoute]Guid id)
         {
             AccountReadModel account = await _query.Query<Task<AccountReadModel>, Guid>(id);
-            return Json(account);
+            return Content(JsonSerializer.Serialize(account));
         }
     }
 }
