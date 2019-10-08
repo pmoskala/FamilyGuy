@@ -53,7 +53,12 @@ namespace FamilyGuy.Account.Test
         {
             // Arrange
             const string userName = "UserName";
-            (Guid userId, string userPassword, string passwordSalt) = await CreateTestUser(userName);
+            Guid userId = Guid.NewGuid();
+            const string userPassword = "WeakPassword1";
+            const string passwordSalt = "SaltySalt";
+            User user = new User(userId, userName, "Dirk", "Gently", "gently@detectives.org", userPassword, passwordSalt, "555-1234");
+            IAccountsRepository accountsRepository = _container.Resolve<IAccountsRepository>();
+            await accountsRepository.Add(user);
 
             // Act
             ICommandBus commandBus = _container.Resolve<ICommandBus>();
@@ -76,39 +81,6 @@ namespace FamilyGuy.Account.Test
             userWithCredentials.PasswordSalt
                 .Should().NotBeEmpty()
                 .And.NotBe(passwordSalt);
-        }
-        
-        [Fact]
-        public async Task ChangeUserPasswordCommand_PasswordIsEmpty_ShouldFail()
-        {
-            // Arrange
-            const string userName = "UserName";
-            (Guid userId, string userPassword, string passwordSalt) = await CreateTestUser(userName);
-
-            // Act
-            ICommandBus commandBus = _container.Resolve<ICommandBus>();
-            await commandBus.Send(new ChangeUserPasswordCommand
-            {
-                UserId = userId,
-                Password = ""
-            });
-
-            IAccountsPerspective accountsPerspective = _container.Resolve<IAccountsPerspective>();
-            AccountWithCredentialsModel userWithCredentials = await accountsPerspective.GetUserWithCredentials(userName);
-            
-            // Assert
-            // todo: Do nothing right now - will be handled when command validation will be implemented
-        }
-
-        private async Task<(Guid, string, string)> CreateTestUser(string userName)
-        {
-            Guid userId = Guid.NewGuid();
-            const string userPassword = "WeakPassword1";
-            const string passwordSalt = "SaltySalt";
-            User user = new User(userId, userName, "Dirk", "Gently", "gently@detectives.org", userPassword, passwordSalt, "555-1234");
-            IAccountsRepository accountsRepository = _container.Resolve<IAccountsRepository>();
-            await accountsRepository.Add(user);
-            return (userId, userPassword, passwordSalt);
         }
 
         public void Dispose()

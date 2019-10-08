@@ -12,15 +12,15 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests.UserTests.UserApi
     public interface IAccountsApi
     {
         [Post("api/v1.0/accounts")]
-        Task<Response<string>> PostAccount([Body]PostAccountModel model);
+        Task<Response<string>> PostAccount([Body]AccountPostModel model);
 
         [Post("api/v1.0/accounts")]
         [AllowAnyStatusCode]
-        Task<Response<ModelStateDictionary>> PostAccountError([Body]PostAccountModel model);
+        Task<Response<ModelStateDictionary>> PostAccountError([Body]AccountPostModel model);
 
         [Post("api/v1.0/accounts/authenticate")]
         [AllowAnyStatusCode]
-        Task<Response<AuthenticatedUserReadModel>> PostAuthenticate([Body]PostUserAuthenticationModel model);
+        Task<Response<AuthenticatedUserReadModel>> PostAuthenticate([Body]UserAuthenticationPostModel model);
 
         [Get("api/v1.0/accounts/{id}")]
         Task<Response<AccountReadModel>> GetAccount([Path]Guid id);

@@ -1,63 +1,52 @@
-using System;
-using System.Collections.Generic;
+using Autofac;
+using FamilyGuy.Accounts;
+using FamilyGuy.Accounts.Domain;
 using FamilyGuy.Infrastructure.InMemoryRepositories;
 using FamilyGuy.IntegrationTests.IntegrationTests.UserTests.UserApi;
-using FamilyGuy.UserApi.Controllers;
 using FamilyGuy.UserApi.Model;
 using FamilyGuy.UserApi.Services;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json;
 using RestEase;
+using System;
 using Xunit;
-using HttpResponseHeaders = System.Net.Http.Headers.HttpResponseHeaders;
 
 namespace FamilyGuy.IntegrationTests.IntegrationTests.UserTests
 {
-    public class UserAuth : UserTestBase, IDisposable
+    public class UserAuth : TestBase, IDisposable
     {
+
         [Fact]
         public async void UserAuthenticationProcessTest()
         {
+            InMemoryAccountsRepository inMemoryAccountsRepository = new InMemoryAccountsRepository();
             // Setup
             Bootstrap.Run(new string[0], builder =>
             {
-                //builder.RegisterType<TestSmtpClient>().AsImplementedInterfaces();
+                builder.RegisterType<DummyPasswordHasher>().AsImplementedInterfaces();
+                builder.RegisterInstance(inMemoryAccountsRepository).As<IAccountsRepository>();
             }, "IntegrationTesting");
 
-            Guid userId = Guid.NewGuid();
-            PostAccountModel postAccountModel = CreatePostAccountModel(userId);
+            User user = new User(Guid.NewGuid(),
+                    "userName", "Ala",
+                    "Kotowska", "ala@ktowoscy.pl",
+                    "2384u982374982374", "872472364",
+                    "555-5555");
 
-            // Act
-            HttpResponseHeaders responseMessageHeaders;
-            using (Response<string> response = await RestClient.For<IAccountsApi>(Url).PostAccount(postAccountModel))
-            {
-                Assert.True(response.ResponseMessage.IsSuccessStatusCode);
-                responseMessageHeaders = response.ResponseMessage.Headers;
-                Assert.True(responseMessageHeaders.Location.IsAbsoluteUri);
-            }
+            await inMemoryAccountsRepository.Add(user);
 
-            using (Response<string> response = await RestClient.For<IConfirmationApi>(responseMessageHeaders.Location)
-                .PutConfirmation(new ConfirmationModel {Confirmed = true}))
+            UserAuthenticationPostModel userAuthenticationPostModel = new UserAuthenticationPostModel
             {
-                Assert.True(response.ResponseMessage.IsSuccessStatusCode);
-            }
-
-            PostUserAuthenticationModel postUserAuthenticationModel = new PostUserAuthenticationModel
-            {
-                UserName = postAccountModel.LoginName,
-                Password = postAccountModel.Password
+                UserName = user.UserName,
+                Password = user.PasswordHash
             };
 
-            using (Response<AuthenticatedUserReadModel> response =
-                await RestClient.For<IAccountsApi>(Url).PostAuthenticate(postUserAuthenticationModel))
-            {
-                Assert.True(response.ResponseMessage.IsSuccessStatusCode);
-                AuthenticatedUserReadModel authUser = response.GetContent();
-                Assert.Equal(postAccountModel.Name, authUser.Name);
-                Assert.Equal(postAccountModel.Surname, authUser.Surname);
-                string[] tokenParts = authUser.Token.Split('.');
-                Assert.Equal(3, tokenParts.Length);
-            }
+            using Response<AuthenticatedUserReadModel> response = await RestClient.For<IAccountsApi>(Url).PostAuthenticate(userAuthenticationPostModel);
+
+            Assert.True(response.ResponseMessage.IsSuccessStatusCode);
+            AuthenticatedUserReadModel authUser = response.GetContent();
+            Assert.Equal(user.Name, authUser.Name);
+            Assert.Equal(user.Surname, authUser.Surname);
+            string[] tokenParts = authUser.Token.Split('.');
+            Assert.Equal(3, tokenParts.Length);
         }
 
         public void Dispose()

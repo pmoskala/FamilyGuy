@@ -33,7 +33,7 @@ namespace FamilyGuy.UserApi.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> PostAccount([FromBody] PostAccountModel model)
+        public async Task<IActionResult> PostAccount([FromBody] AccountPostModel model)
         {
             Guid userId = model.Id;
             try
@@ -63,7 +63,7 @@ namespace FamilyGuy.UserApi.Controllers
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public async Task<IActionResult> PostAuthenticate([FromBody] PostUserAuthenticationModel user)
+        public async Task<IActionResult> PostAuthenticate([FromBody] UserAuthenticationPostModel user)
         {
             AuthenticatedUserReadModel token = await _authenticationService.Authenticate(user.UserName, user.Password);
             return Content(JsonSerializer.Serialize(token));

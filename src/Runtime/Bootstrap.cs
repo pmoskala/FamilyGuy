@@ -2,7 +2,6 @@
 using FamilyGuy.Infrastructure;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
 using System.Threading;
@@ -34,5 +33,5 @@ namespace FamilyGuy
         {
             loggerConfiguration.ReadFrom.Configuration(webHostingContext.Configuration);
         }
-    }    
+    }
 }

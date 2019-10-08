@@ -1,22 +1,23 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using FamilyGuy.ActionFilters;
 using FamilyGuy.Infrastructure.DI;
 using FamilyGuy.Infrastructure.Extensions;
 using FamilyGuy.Middleware;
 using FamilyGuy.Persistence.Configuration;
 using FamilyGuy.TestingAuth;
 using FamilyGuy.UserApi.DI;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Swashbuckle.AspNetCore.Swagger;
-using System;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
+using System.Text;
 
 namespace FamilyGuy
 {
@@ -36,15 +37,18 @@ namespace FamilyGuy
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-
-            services.AddControllers()
+            services.AddControllers(opt => opt.Filters.Add(typeof(FluentValidationActionFilter)))
                 .AddApplicationPart(typeof(AutofacUserApiModule).Assembly)
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-                .AddControllersAsServices();
+                .AddControllersAsServices()
+                .AddFluentValidation(fvc =>
+                {
+                    fvc.RegisterValidatorsFromAssemblyContaining<AutofacUserApiModule>();
+                });
 
             services.AddEntityFrameworkSqlServer()
-                    .AddEntityFrameworkInMemoryDatabase()
-                    .AddDbContext<FamilyGuyDbContext>();
+                .AddEntityFrameworkInMemoryDatabase()
+                .AddDbContext<FamilyGuyDbContext>();
 
             if (_hostingEnvironment.EnvironmentName != "IntegrationTesting")
                 ConfigureJwtServices(services);
@@ -93,7 +97,10 @@ namespace FamilyGuy
 
         private static void AddSwaggerApiDocumentationFramework(IServiceCollection services)
         {
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "FamilyGuy API", Version = "v1" }); });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FamilyGuy API", Version = "v1" });
+            });
         }
 
         private IContainer ConfigureAutofacDiContainer(IServiceCollection services)
@@ -121,13 +128,10 @@ namespace FamilyGuy
         public void Configure(IApplicationBuilder app)
         {
             app.UseResponseTimeMeasurementMiddleware();
-            
+
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FamilyGuy Api v1");
-            });
-            
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "FamilyGuy Api v1"); });
+
             app.UseAuthorization();
             app.UseAuthentication();
 
@@ -139,10 +143,7 @@ namespace FamilyGuy
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }
