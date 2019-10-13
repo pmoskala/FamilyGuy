@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Autofac;
 using FamilyGuy.Accounts;
 using FamilyGuy.Accounts.AccountQuery;
@@ -12,15 +10,17 @@ using FamilyGuy.Infrastructure.DI;
 using FamilyGuy.Infrastructure.InMemoryRepositories;
 using FamilyGuy.Infrastructure.PasswordHasher;
 using FamilyGuy.Processes.UserRegistration;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using System;
+using System.Threading.Tasks;
 using Xunit;
-using FluentAssertions;
 
 namespace FamilyGuy.Account.Test
 {
     [Collection("PasswordChangeTests")]
-    public class PasswordChangeTests : IDisposable
+    public class PasswordChangeTests
     {
         private readonly IContainer _container;
 
@@ -39,7 +39,7 @@ namespace FamilyGuy.Account.Test
 
             builder.RegisterType<InMemoryAccountsRepository>()
                 .AsImplementedInterfaces()
-                .InstancePerDependency();
+                .SingleInstance();
 
             builder.RegisterType<PasswordHasher>()
                 .As<IPasswordHasher>()
@@ -71,22 +71,16 @@ namespace FamilyGuy.Account.Test
 
             IAccountsPerspective accountsPerspective = _container.Resolve<IAccountsPerspective>();
             AccountWithCredentialsModel userWithCredentials = await accountsPerspective.GetUserWithCredentials(userName);
-            
+
             // Assert
             userWithCredentials.PasswordHash
                 .Should().NotBeNullOrWhiteSpace("Password should be hashed and contained")
                 .And.NotBe(userPassword)
                 .And.NotBe(newPassword);
-            
+
             userWithCredentials.PasswordSalt
                 .Should().NotBeEmpty()
                 .And.NotBe(passwordSalt);
-        }
-
-        public void Dispose()
-        {
-            IFlushableRepository flushableRepository = _container.Resolve<IFlushableRepository>();
-            flushableRepository.Clear();
         }
     }
 }

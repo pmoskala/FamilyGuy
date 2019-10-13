@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
@@ -26,17 +28,19 @@ namespace FamilyGuy
         private readonly IWebHostEnvironment _hostingEnvironment;
         public IConfiguration Configuration { get; }
         public static Action<ContainerBuilder> RegisterExternalTypes { get; set; } = builder => { };
+        private readonly ILogger _logger;
 
-
-        public Startup(IConfiguration configuration, IWebHostEnvironment hostingEnvironment)
+        public Startup(IConfiguration configuration, IWebHostEnvironment hostingEnvironment, ILoggerFactory loggerFactory)
         {
             _hostingEnvironment = hostingEnvironment;
             Configuration = configuration;
+            _logger = loggerFactory.CreateLogger("Startup logger");
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            LogSettings();
             services.AddControllers(opt => opt.Filters.Add(typeof(FluentValidationActionFilter)))
                 .AddApplicationPart(typeof(AutofacUserApiModule).Assembly)
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
@@ -62,28 +66,42 @@ namespace FamilyGuy
             return new AutofacServiceProvider(container);
         }
 
+        private void LogSettings()
+        {
+            if (!_hostingEnvironment.IsDevelopment())
+                return;
+
+            JwtSettings jwtSettings = Configuration.GetSettings<JwtSettings>();
+            _logger.LogWarning($"{nameof(jwtSettings.Issuer)}: {jwtSettings.Issuer}");
+            _logger.LogWarning($"{nameof(jwtSettings.ExpiryMinutes)}: {jwtSettings.ExpiryMinutes}");
+            _logger.LogWarning($"{nameof(jwtSettings.Key)}: {jwtSettings.Key}");
+
+            SqlSettings sqlSettings = Configuration.GetSettings<SqlSettings>();
+            _logger.LogWarning($"{nameof(sqlSettings.ConnectionString)}: {sqlSettings.ConnectionString}");
+        }
+
         private void ConfigureJwtServices(IServiceCollection services)
         {
             JwtSettings jwtSettings = Configuration.GetSettings<JwtSettings>();
             byte[] key = Encoding.ASCII.GetBytes(jwtSettings.Key);
 
             services.AddAuthentication(x =>
-                {
-                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(x =>
-                {
-                    x.RequireHttpsMetadata = false;
-                    x.SaveToken = true;
-                    x.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                });
+                        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    })
+                    .AddJwtBearer(x =>
+                    {
+                        x.RequireHttpsMetadata = false;
+                        x.SaveToken = true;
+                        x.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(key),
+                            ValidateIssuer = false,
+                            ValidateAudience = false
+                        };
+                    });
         }
 
         private static void FakeTestingAuth(IServiceCollection services)

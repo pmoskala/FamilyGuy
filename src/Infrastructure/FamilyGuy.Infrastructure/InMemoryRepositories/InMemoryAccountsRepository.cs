@@ -9,12 +9,11 @@ using User = FamilyGuy.Accounts.Domain.User;
 
 namespace FamilyGuy.Infrastructure.InMemoryRepositories
 {
-    public class InMemoryAccountsRepository : IFlushableRepository, IAccountsPerspective, IAccountsRepository,
-        IInMemoryRepository
+    public class InMemoryAccountsRepository : IAccountsPerspective, IAccountsRepository, IInMemoryRepository
     {
-        public static List<User> Users = new List<User>();
+        public readonly List<User> Users = new List<User>();
 
-        public async Task Add(User user) 
+        public async Task Add(User user)
             => await Task.Run(() => Users.Add(user));
 
         public async Task UpdatePassword(Guid userId, string passwordHash, string salt)
@@ -60,10 +59,5 @@ namespace FamilyGuy.Infrastructure.InMemoryRepositories
         }
 
         public void Clear() => Users.Clear();
-    }
-
-    public interface IFlushableRepository
-    {
-        void Clear();
     }
 }

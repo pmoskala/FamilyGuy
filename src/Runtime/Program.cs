@@ -14,8 +14,7 @@ namespace FamilyGuy
             {
                 Console.WriteLine(exception);
             }
-
-            Console.ReadKey();
+            //Console.ReadKey();
         }
     }
 }

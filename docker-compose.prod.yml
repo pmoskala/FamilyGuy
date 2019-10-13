@@ -1,0 +1,43 @@
+version: "3.7"
+
+services:
+
+  web:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Sql__ConnectionString: Server=sql.data;Database=FamilyGuy;User Id=sa;Password=P@ssw0rd123
+      Jwt__Key: super_secret_key_123!
+      Jwt__Issuer: http://localhost:8081
+      Jwt__ExpiryMinutes: 60
+      Host__Url: http://localhost:8081
+    ports:
+      - 8081:80
+    networks:
+      - sharednet
+    depends_on:
+      - sql.data
+
+  sql.data:
+    image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: P@ssw0rd123
+      MSSQL_MEMORY_LIMIT_MB: 2048
+      MSSQL_PID: Developer
+    networks:
+      - sharednet
+    volumes:
+      - sql:/var/opt/mssql/data/
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 2048M
+    #     reservation:
+    #       memory: 2048M
+
+volumes:
+  sql:
+
+networks:
+  sharednet:
+    driver: bridge
