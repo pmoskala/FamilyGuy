@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+
+  web:
+    image: family-guy:1.0
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Sql__InMemory: "false"
+    depends_on:
+      - sql.data
+
+  sql.data:
+    image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu

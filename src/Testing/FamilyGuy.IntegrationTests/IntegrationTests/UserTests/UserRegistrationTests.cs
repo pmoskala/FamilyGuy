@@ -1,4 +1,5 @@
-﻿using FamilyGuy.Accounts.AccountQuery.Model;
+﻿using Autofac;
+using FamilyGuy.Accounts.AccountQuery.Model;
 using FamilyGuy.Infrastructure.InMemoryRepositories;
 using FamilyGuy.IntegrationTests.IntegrationTests.UserTests.UserApi;
 using FamilyGuy.UserApi.Model;
@@ -12,16 +13,18 @@ using Xunit;
 
 namespace FamilyGuy.IntegrationTests.IntegrationTests.UserTests
 {
-    public class UserRegistrationTests : TestBase, IDisposable
+    [Collection("IntegrationTests")]
+    public class UserRegistrationTests : TestBase
     {
         [Fact]
         public async void UserCreationProcessTests()
         {
             // Setup
+            InMemoryAccountsRepository inMemoryAccountsRepository = new InMemoryAccountsRepository();
+
             Bootstrap.Run(new string[0], builder =>
             {
-
-                //builder.RegisterType<TestSmtpClient>().AsImplementedInterfaces();
+                builder.RegisterInstance(inMemoryAccountsRepository).AsImplementedInterfaces().SingleInstance();
             }, "IntegrationTesting");
 
             Guid userId = Guid.NewGuid();
@@ -56,9 +59,11 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests.UserTests
         public async void UserCreationProcessTests_ShouldFailWhenUserNameIsNotUniqueAndRegistrationProcessIsNotComplete()
         {
             // Setup
+            InMemoryAccountsRepository inMemoryAccountsRepository = new InMemoryAccountsRepository();
+
             Bootstrap.Run(new string[0], builder =>
             {
-                //builder.RegisterType<TestSmtpClient>().AsImplementedInterfaces();
+                builder.RegisterInstance(inMemoryAccountsRepository).AsImplementedInterfaces().SingleInstance();
             }, "IntegrationTesting");
 
             Guid userId = Guid.NewGuid();
@@ -84,9 +89,11 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests.UserTests
         public async void UserCreationProcessTests_ShouldFailWhenUserNameIsNotUnique()
         {
             // Setup
+            InMemoryAccountsRepository inMemoryAccountsRepository = new InMemoryAccountsRepository();
+
             Bootstrap.Run(new string[0], builder =>
             {
-                //builder.RegisterType<TestSmtpClient>().AsImplementedInterfaces();
+                builder.RegisterInstance(inMemoryAccountsRepository).AsImplementedInterfaces().SingleInstance();
             }, "IntegrationTesting");
 
             Guid userId = Guid.NewGuid();
@@ -127,11 +134,6 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests.UserTests
                 TelephoneNumber = "555-123-321",
                 Email = "ala.ma.kotowska@gmail.com"
             };
-        }
-
-        public void Dispose()
-        {
-            InMemoryAccountsRepository.Users.Clear();
         }
     }
 }

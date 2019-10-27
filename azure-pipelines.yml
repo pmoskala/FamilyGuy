@@ -13,6 +13,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  imageName: 'docker-familyguy'
 
 steps:
 - task: NuGetToolInstaller@1
@@ -28,7 +29,16 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
+- task: DotNetCoreCLI@2
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: test
+    projects: '**/*Test/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: Docker@2
+  displayName: Build image and push to registry
+  inputs:
+    containerRegistry: 'DockerHub-Mos'
+    repository: 'adrrit/familyguy-mos-repository'
+    command: 'buildAndPush'
+    Dockerfile: Dockerfile
