@@ -72,12 +72,12 @@ namespace FamilyGuy
                 return;
 
             JwtSettings jwtSettings = Configuration.GetSettings<JwtSettings>();
-            _logger.LogWarning($"{nameof(jwtSettings.Issuer)}: {jwtSettings.Issuer}");
-            _logger.LogWarning($"{nameof(jwtSettings.ExpiryMinutes)}: {jwtSettings.ExpiryMinutes}");
-            _logger.LogWarning($"{nameof(jwtSettings.Key)}: {jwtSettings.Key}");
+            _logger.LogInformation($"{nameof(jwtSettings.Issuer)}: {jwtSettings.Issuer}");
+            _logger.LogInformation($"{nameof(jwtSettings.ExpiryMinutes)}: {jwtSettings.ExpiryMinutes}");
+            _logger.LogInformation($"{nameof(jwtSettings.Key)}: {jwtSettings.Key}");
 
             SqlSettings sqlSettings = Configuration.GetSettings<SqlSettings>();
-            _logger.LogWarning($"{nameof(sqlSettings.ConnectionString)}: {sqlSettings.ConnectionString}");
+            _logger.LogInformation($"{nameof(sqlSettings.ConnectionString)}: {sqlSettings.ConnectionString}");
         }
 
         private void ConfigureJwtServices(IServiceCollection services)
@@ -150,7 +150,8 @@ namespace FamilyGuy
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "FamilyGuy Api v1"); });
 
-            app.UseAuthorization();
+            app.UseErrorHandlingMiddleware();
+
             app.UseAuthentication();
 
             app.UseRouting();
@@ -160,6 +161,8 @@ namespace FamilyGuy
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

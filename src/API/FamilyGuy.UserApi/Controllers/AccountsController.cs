@@ -1,17 +1,17 @@
 ﻿using FamilyGuy.Accounts.AccountQuery.Model;
+using FamilyGuy.Accounts.ChangePassword.Contract;
 using FamilyGuy.Contracts.Communication.Interfaces;
 using FamilyGuy.Infrastructure;
 using FamilyGuy.Processes.UserRegistration.Contract;
 using FamilyGuy.UserApi.Model;
 using FamilyGuy.UserApi.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using FamilyGuy.Accounts.ChangePassword.Contract;
 
 namespace FamilyGuy.UserApi.Controllers
 {
@@ -85,7 +85,7 @@ namespace FamilyGuy.UserApi.Controllers
             if (userIdFromToken != passwordChangePutModel.UserId)
             {
                 ModelStateDictionary mds = new ModelStateDictionary();
-                mds.AddModelError("Password", "Password cannot be changed for unauthorized user.");
+                mds.AddModelError("Password", "Password cannot be changed for different user.");
                 return BadRequest(mds);
             }
 
@@ -95,7 +95,7 @@ namespace FamilyGuy.UserApi.Controllers
                 Password = passwordChangePutModel.NewPassword
             };
 
-            await _commandBus.Send(changeUserPasswordCommand);            
+            await _commandBus.Send(changeUserPasswordCommand);
             return Ok();
         }
 

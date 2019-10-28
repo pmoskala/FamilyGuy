@@ -1,15 +1,12 @@
-﻿using System;
-using FamilyGuy.Contracts.Exceptions;
+﻿using FamilyGuy.Contracts.Exceptions;
 
 namespace FamilyGuy.Accounts.AccountExceptions
 {
     public class UserNotFoundFgException : FgBaseNotFoundException
     {
-        public string UserName { get; }
 
-        public UserNotFoundFgException(string userName)
+        public UserNotFoundFgException(string userName) : base($"User with username {userName} not found.")
         {
-            UserName = userName;
         }
     }
 }

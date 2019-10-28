@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+
+  sql.data:
+    image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: P@ssw0rd123
+      MSSQL_MEMORY_LIMIT_MB: 2048
+      MSSQL_PID: Developer
+    ports:
+      - 1433:1433

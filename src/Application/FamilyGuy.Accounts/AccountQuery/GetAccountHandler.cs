@@ -1,8 +1,8 @@
-﻿using FamilyGuy.Accounts.AccountQuery.Model;
+﻿using FamilyGuy.Accounts.AccountExceptions;
+using FamilyGuy.Accounts.AccountQuery.Model;
 using FamilyGuy.Contracts.Communication.Interfaces;
 using System;
 using System.Threading.Tasks;
-using FamilyGuy.Accounts.AccountExceptions;
 
 namespace FamilyGuy.Accounts.AccountQuery
 {
