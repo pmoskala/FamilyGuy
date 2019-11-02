@@ -62,7 +62,7 @@ namespace FamilyGuy.Account.Test
 
             // Act
             ICommandBus commandBus = _container.Resolve<ICommandBus>();
-            string newPassword = "KubusPuchatek654";
+            const string newPassword = "KubusPuchatek654";
             await commandBus.Send(new ChangeUserPasswordCommand
             {
                 UserId = userId,
