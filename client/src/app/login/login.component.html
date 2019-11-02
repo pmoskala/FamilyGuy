@@ -1,0 +1,25 @@
+<div class="login-wrapper" fxLayout="row" fxLayoutAlign="center center">
+
+  <mat-card class="box">
+    <mat-card-header>
+      <mat-card-title>Log in</mat-card-title>
+    </mat-card-header>
+
+    <form class="fg-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <mat-card-content>
+        <mat-form-field class="full-width-input">
+          <input matInput placeholder="Username" formControlName="username">
+          <mat-error *ngIf="hasError('username', 'required')">Username is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="full-width-input">
+          <input matInput type="password" placeholder="Password" formControlName="password">
+          <mat-error *ngIf="hasError('password', 'required')">Password is required</mat-error>
+          <mat-error *ngIf="hasError('password', 'minlength')">Password min length is {{passwordMinLength}}</mat-error>
+        </mat-form-field>
+      </mat-card-content>
+      <button mat-stroked-button color="accent" class="btn-block">Log in</button>
+    </form>
+  </mat-card>
+</div>
+
