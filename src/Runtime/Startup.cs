@@ -156,13 +156,12 @@ namespace FamilyGuy
 
             app.UseRouting();
 
-            // todo limit this later, it's ok for the time being
+            app.UseAuthorization();
+            
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
