@@ -20,4 +20,8 @@
     <ProjectReference Include="..\..\Infrastructure\FamilyGuy.Infrastructure\FamilyGuy.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Process\FamilyGuy.Processes\FamilyGuy.Processes.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
 </Project>

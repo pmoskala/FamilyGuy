@@ -1,13 +1,14 @@
-﻿using FamilyGuy.Accounts.AccountQuery.Model;
+﻿using FamilyGuy.Accounts.AccountExceptions;
+using FamilyGuy.Accounts.AccountQuery.Model;
 using FamilyGuy.Contracts.Communication.Interfaces;
 using FamilyGuy.Infrastructure.DI;
 using FamilyGuy.Processes.UserRegistration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FamilyGuy.UserApi.Services
 {
@@ -31,12 +32,25 @@ namespace FamilyGuy.UserApi.Services
                 UserName = userName,
             };
 
-            AccountWithCredentialsModel account = await _query.Query<Task<AccountWithCredentialsModel>, AccountByUserNameQuery>(accountByUserNameQuery);
-            if (account == null) return null;
+            AccountWithCredentialsModel account = await GetUser(accountByUserNameQuery);
+            await AssertPassword(password, account);
 
-            if (!await _passwordHasher.CheckHash(password, account.PasswordHash, account.PasswordSalt))
-                return null; // todo throw exception
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityToken token = CreateToken(account, tokenHandler);
 
+            return new AuthenticatedUserReadModel
+            {
+                Token = tokenHandler.WriteToken(token),
+                FirstName = account.Name,
+                LastName = account.Surname,
+                Id = account.Id,
+                UserName = userName
+            };
+        }
+
+        private JwtSecurityToken CreateToken(AccountWithCredentialsModel account,
+            JwtSecurityTokenHandler tokenHandler)
+        {
             byte[] key = Encoding.ASCII.GetBytes(_jwtSettings.Key);
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -45,25 +59,40 @@ namespace FamilyGuy.UserApi.Services
                     new Claim(JwtRegisteredClaimNames.Sub, account.Id.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials =
+                    new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            JwtSecurityToken token = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
+            return tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
+        }
 
-            return new AuthenticatedUserReadModel
+        private async Task AssertPassword(string password, AccountWithCredentialsModel account)
+        {
+            if (!await _passwordHasher.CheckHash(password, account.PasswordHash, account.PasswordSalt))
+                throw new UnauthorizedAccessException();
+        }
+
+        private async Task<AccountWithCredentialsModel> GetUser(AccountByUserNameQuery accountByUserNameQuery)
+        {
+            try
             {
-                Token = tokenHandler.WriteToken(token),
-                Name = account.Name,
-                Surname = account.Surname
-            };
+                return await _query.Query<Task<AccountWithCredentialsModel>, AccountByUserNameQuery>(
+                    accountByUserNameQuery);
+
+            }
+            catch (UserNotFoundFgException)
+            {
+                throw new UnauthorizedAccessException();
+            }
         }
     }
 
     public class AuthenticatedUserReadModel
     {
         public string Token { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string UserName { get; set; }
+        public Guid Id { get; set; }
     }
 }
