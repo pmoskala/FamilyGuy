@@ -81,7 +81,7 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests.UserTests
             {
                 Assert.False(response.ResponseMessage.IsSuccessStatusCode);
                 Dictionary<string, string[]> deserializeObject = JsonConvert.DeserializeObject<Dictionary<string, string[]>>(response.StringContent);
-                Assert.Equal($"The provided username {accountPostModel.LoginName} already exists", deserializeObject["LoginName"][0]);
+                Assert.Equal($"The provided username {accountPostModel.LoginName} already exists", deserializeObject["UserName"][0]);
             }
         }
 
@@ -118,7 +118,7 @@ namespace FamilyGuy.IntegrationTests.IntegrationTests.UserTests
             {
                 Assert.False(response.ResponseMessage.IsSuccessStatusCode);
                 Dictionary<string, string[]> deserializeObject = JsonConvert.DeserializeObject<Dictionary<string, string[]>>(response.StringContent);
-                Assert.Equal($"The provided username {accountPostModel.LoginName} already exists", deserializeObject["LoginName"][0]);
+                Assert.Equal($"The provided username {accountPostModel.LoginName} already exists", deserializeObject["UserName"][0]);
             }
         }
 

@@ -42,7 +42,7 @@ namespace FamilyGuy.UserApi.Controllers
                 {
                     Id = userId,
                     BaseUrl = BaseUrl.Current,
-                    LoginName = model.LoginName,
+                    UserName = model.LoginName,
                     Name = model.Name,
                     Surname = model.Surname,
                     Email = model.Email,

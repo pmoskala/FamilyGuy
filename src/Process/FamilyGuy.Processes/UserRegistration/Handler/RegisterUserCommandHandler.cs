@@ -25,12 +25,12 @@ namespace FamilyGuy.Processes.UserRegistration.Handler
         }
         public async Task Handle(RegisterUserCommand command)
         {
-            AccountReadModel accountReadModel = await _query.Query<Task<AccountReadModel>, string>(command.LoginName);
+            AccountReadModel accountReadModel = await _query.Query<Task<AccountReadModel>, string>(command.UserName);
             if (accountReadModel != null)
-                throw new LoginNameAlreadyUsedException(command.LoginName);
+                throw new LoginNameAlreadyUsedException(command.UserName);
 
-            if (await _sagaRepository.Get<UserRegistrationSagaData>(x => x.LoginName == command.LoginName) != null)
-                throw new LoginNameAlreadyUsedException(command.LoginName);
+            if (await _sagaRepository.Get<UserRegistrationSagaData>(x => x.LoginName == command.UserName) != null)
+                throw new LoginNameAlreadyUsedException(command.UserName);
 
             UserRegistrationSaga saga = new UserRegistrationSaga(_commandBus, _passwordHasher);
             UserRegistrationSagaData data = new UserRegistrationSagaData { Id = command.Id };

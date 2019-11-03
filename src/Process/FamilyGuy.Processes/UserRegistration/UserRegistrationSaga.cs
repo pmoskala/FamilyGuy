@@ -41,8 +41,8 @@ namespace FamilyGuy.Processes.UserRegistration
             string salt = await _passwordHasher.GetSalt();
             context.Instance.Id = context.Data.Id;
             context.Instance.BaseUrl = context.Data.BaseUrl;
-            context.Instance.LoginName = context.Data.LoginName;
-            context.Instance.Name = context.Data.Name;
+            context.Instance.LoginName = context.Data.UserName;
+            context.Instance.Name = context.Data.FirstName;
             context.Instance.Surname = context.Data.Surname;
             context.Instance.PasswordHash = await _passwordHasher.HashString(context.Data.Password, salt);
             context.Instance.PasswordSalt = salt;
@@ -55,7 +55,7 @@ namespace FamilyGuy.Processes.UserRegistration
             // todo send notification
             //_commandBus.Send(new SendNotificationCommand()
             //{
-            //    LoginName = context.Instance.LoginName,
+            //    UserName = context.Instance.UserName,
             //    Body = $"<a href=\"{context.Instance.BaseUrl}/Confirmation/{context.Instance.Id}\">Click her to confirm</a>",
             //    Title = "Registration confirmation",
             //    NotificationType = "RegistrationConfirmation"
