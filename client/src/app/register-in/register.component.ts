@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FgErrorStateMatcher} from '@app/_common/FgErrorStateMatcher';
+import {UserService} from '@app/_services';
+import {RegisterUser} from '@app/_models/register-user';
+import * as uuid from 'uuid';
+
 
 @Component({
   selector: 'app-register',
@@ -15,6 +19,7 @@ export class RegisterComponent implements OnInit {
   matcher = new FgErrorStateMatcher();
 
   constructor( private formBuilder: FormBuilder,
+               private userService: UserService,
                private route: ActivatedRoute,
                private router: Router) { }
 
@@ -49,7 +54,27 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.registerForm);
+    if (this.registerForm.invalid) {
+      return;
+    }
+    const {username, firstName, lastName, email, telephone, password} = this.registerForm.value;
+
+    const registeredUser: RegisterUser = {
+      id: uuid.v4(),
+      userName: username,
+      email,
+      firstName,
+      lastName,
+      telephoneNumber: telephone,
+      password
+    };
+
+    this.userService.register(registeredUser).subscribe(() => {
+
+    }, error => {
+      console.log('Registration error');
+      }
+    );
   }
 }
 

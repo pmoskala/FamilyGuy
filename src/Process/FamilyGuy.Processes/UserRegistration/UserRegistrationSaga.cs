@@ -43,7 +43,7 @@ namespace FamilyGuy.Processes.UserRegistration
             context.Instance.BaseUrl = context.Data.BaseUrl;
             context.Instance.LoginName = context.Data.UserName;
             context.Instance.Name = context.Data.FirstName;
-            context.Instance.Surname = context.Data.Surname;
+            context.Instance.Surname = context.Data.LastName;
             context.Instance.PasswordHash = await _passwordHasher.HashString(context.Data.Password, salt);
             context.Instance.PasswordSalt = salt;
             context.Instance.Email = context.Data.Email;

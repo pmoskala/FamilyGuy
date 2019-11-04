@@ -43,8 +43,8 @@ namespace FamilyGuy.UserApi.Controllers
                     Id = userId,
                     BaseUrl = BaseUrl.Current,
                     UserName = model.LoginName,
-                    Name = model.Name,
-                    Surname = model.Surname,
+                    FirstName = model.Name,
+                    LastName = model.Surname,
                     Email = model.Email,
                     Password = model.Password,
                     TelephoneNumber = model.TelephoneNumber

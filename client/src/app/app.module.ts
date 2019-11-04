@@ -7,17 +7,19 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {ErrorInterceptor, JwtInterceptor} from '@app/_helpers';
-import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './login/login.component';
+import { HomeComponent } from '@app/home';
+import { LoginComponent } from '@app/login';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {RegisterComponent} from '@app/register-in';
+import {ErrorNotificationComponent} from '@app/_common/notification/error-notification.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    ErrorNotificationComponent
   ],
   imports: [
     BrowserModule,
@@ -33,6 +35,7 @@ import {RegisterComponent} from '@app/register-in';
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
     ],
+  entryComponents: [ErrorNotificationComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
